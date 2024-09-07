@@ -2,6 +2,7 @@
 </script>
 
 <template>
+  <router-link to="/weather"></router-link>
   <RouterView />
 </template>
 
