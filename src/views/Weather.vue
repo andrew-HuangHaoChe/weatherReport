@@ -4,13 +4,10 @@
             <option value="">不拘</option>
             <option v-for="item in weatherStations" :key="item.id" :value="item.id">{{item.name}}</option>
         </select>
-        <pre>{{ currentRainFalls }}</pre>
+        <!-- <pre>{{ currentRainFalls }}</pre> -->
         <h4 class="mt-3">台灣各縣市降雨量</h4>
         <div class="chart"></div>
-        <div class="btnWrap">
-            <!-- <button class="btn btn-primary July">2021 7月</button>
-            <button class="btn btn-primary August">2021 8月</button> -->
-        </div>
+        <weatherWithCahrtJs v-if="currentRainFalls.length !== 0" :rainFalls="currentRainFalls" :labels="xData"/>
     </div>
 </template>
 <script setup>
@@ -18,12 +15,13 @@ import { ref, onMounted } from 'vue';
 import { getDailyRainfalls } from '@/apis/weather';
 import dayjs from 'dayjs';
 import * as d3 from "d3";
+import weatherWithCahrtJs from '@/components/weatherWithCahrtJs.vue';
 
 const stationVal = ref('');
 const weatherStations = ref([]);
-const currentRainFalls = ref({});
+const currentRainFalls = ref([]);
 const rainFalls = ref([]);
-
+const xData = ref([]);
 /**
  * 取得X軸資料
 */
@@ -74,7 +72,7 @@ const drawChart = (xData, yData) => {
     d3.select('.chart svg' ).remove();
 
     const svgWidth = parseInt(d3.select('.chart').style('width')), //parseInt將單位移除 'px'
-          svgHeight = svgWidth * 0.8,
+          svgHeight = svgWidth * 0.75,
           margin = 50;
     const svg = d3.select('.chart')
         .append('svg')
@@ -95,7 +93,7 @@ const drawChart = (xData, yData) => {
                         .call(xAxis)
                         .attr("transform", `translate(0,${svgHeight - margin})`)
                         .selectAll("text") // 調整刻度文字標籤傾斜，避免文字過長互相交疊
-                        .attr("transform", "translate(-10,0)rotate(-45)")
+                        .attr("transform", "translate(28,10)rotate(0)")
                         .style("text-anchor", "end");
     // 設定要給 Y 軸用的 scale 跟 axis
     const yScale = d3.scaleLinear()
@@ -130,7 +128,7 @@ onMounted(async() => {
 <style>
 .chart{
     width: 100%;
-    min-width: 300px;
+    min-width: 800px;
     margin: auto;
 }
 </style>
